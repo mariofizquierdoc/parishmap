@@ -1,0 +1,44 @@
+{
+  "name": "@parishmap/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "import:guayaquil": "tsx --env-file-if-exists=.env scripts/import-guayaquil.ts",
+    "db:seed": "prisma db seed",
+    "e2e:prepare": "tsx scripts/e2e-prepare.ts",
+    "admin:create": "tsx scripts/create-admin.ts",
+    "start": "tsx --env-file-if-exists=.env src/index.ts",
+    "backup": "tsx --env-file-if-exists=.env scripts/backup.ts",
+    "restore": "tsx --env-file-if-exists=.env scripts/restore.ts"
+  },
+  "dependencies": {
+    "@parishmap/shared": "^0.1.0",
+    "@prisma/adapter-better-sqlite3": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "bcryptjs": "^3.0.3",
+    "cheerio": "^1.2.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.3",
+    "helmet": "^8.3.0",
+    "jose": "^6.2.15",
+    "zod": "^4.6.7",
+    "tsx": "^4.23.15",
+    "better-sqlite3": "^12.11.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/supertest": "^7.2.1",
+    "prisma": "7.10.1",
+    "supertest": "^7.3.1"
+  }
+}

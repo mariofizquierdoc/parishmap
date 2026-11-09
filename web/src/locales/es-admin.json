@@ -1,0 +1,155 @@
+{
+  "title": "Administración",
+  "logout": "Cerrar sesión",
+  "viewPublic": "Ver sitio público",
+  "back": "Volver a la lista",
+  "login": {
+    "title": "Iniciar sesión",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "submit": "Entrar",
+    "invalid": "Usuario o contraseña incorrectos.",
+    "tooMany": "Demasiados intentos. Inténtalo de nuevo más tarde.",
+    "notConfigured": "El acceso de administración no está configurado. Ejecuta \"npm run admin:create -w server\"."
+  },
+  "list": {
+    "search": "Buscar parroquia",
+    "outline": "Contorno de la diócesis",
+    "exportAll": "Exportar todo (GeoJSON)",
+    "noResults": "Ninguna parroquia coincide.",
+    "columns": { "name": "Parroquia", "vicariate": "Vicaría", "status": "Estado" },
+    "filters": {
+      "all": "Todas",
+      "missing": "Sin área",
+      "draft": "Con borrador",
+      "approximate": "Aproximadas",
+      "confirmed": "Confirmadas",
+      "noTerritory": "Sin territorio"
+    }
+  },
+  "status": {
+    "missing": "Sin área",
+    "draft": "Borrador",
+    "changes": "Cambios sin publicar",
+    "published": "Publicada",
+    "noTerritory": "Sin territorio",
+    "hidden": "Oculta",
+    "APPROXIMATE": "aproximada",
+    "CONFIRMED": "confirmada"
+  },
+  "progress": {
+    "summary": "{{published}} publicadas · {{draftOnly}} en borrador · {{notStarted}} sin área · {{noTerritory}} sin territorio",
+    "noOutline": "Dibuja primero el contorno de la diócesis, para poder comprobar las demás áreas.",
+    "gaps": "Las zonas rojas no están cubiertas por ninguna parroquia.",
+    "covered": "Todo el territorio de la diócesis está cubierto."
+  },
+  "parish": {
+    "details": "Datos de la parroquia",
+    "name": "Nombre",
+    "sourceName": "Texto original de la fuente",
+    "vicariate": "Vicaría",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "email": "Correo",
+    "website": "Sitio web (http:// o https://)",
+    "priest": "Párroco",
+    "hasTerritory": "Tiene territorio propio",
+    "hasTerritoryHelp": "Desmárcalo para iglesias sin territorio, como las rectorales.",
+    "isPublished": "Mostrar en el sitio público",
+    "save": "Guardar datos",
+    "saved": "Datos guardados.",
+    "noTerritory": "Esta iglesia está marcada como sin territorio, así que no tiene área en el mapa."
+  },
+  "editor": {
+    "outlineTitle": "Contorno de {{name}}",
+    "draw": "Dibujar área",
+    "drawing": "Haz clic para añadir puntos y clic en el primer punto para cerrar. Esc cancela.",
+    "edit": "Editar",
+    "editHelp": "Selecciona un área y arrastra sus puntos. Los puntos intermedios añaden vértices. Clic derecho en un punto lo elimina.",
+    "deletePart": "Eliminar área seleccionada",
+    "selectPartFirst": "Selecciona primero un área.",
+    "undo": "Deshacer",
+    "redo": "Rehacer",
+    "trim": "Recortar con vecinas",
+    "trimmed": "Área recortada. Revísala y guarda el borrador.",
+    "save": "Guardar borrador",
+    "saved": "Borrador guardado.",
+    "publish": "Publicar",
+    "published": "Publicado en el sitio público.",
+    "unpublish": "Despublicar",
+    "unpublished": "Retirado del sitio público. Se conserva como borrador.",
+    "saveFirst": "Guarda el borrador antes de publicar.",
+    "street": "Calles",
+    "satellite": "Satélite",
+    "noSatellite": "Vista satelital no configurada.",
+    "neighbor": "Vecina: {{name}}",
+    "unsaved": "Hay cambios sin guardar. ¿Salir de todos modos?",
+    "emptyShape": "Dibuja al menos un área antes de guardar.",
+    "droppedHoles_one": "Se eliminó {{count}} hueco que quedó fuera del área.",
+    "droppedHoles_other": "Se eliminaron {{count}} huecos que quedaron fuera del área.",
+    "holes_one": "Esta área tiene {{count}} hueco, que se conserva al editar.",
+    "holes_other": "Esta área tiene {{count}} huecos, que se conservan al editar.",
+    "loadFailed": "Una parte de esta área no se pudo abrir en el editor. Para no perderla, el guardado está desactivado.",
+    "status": {
+      "none": "Sin dibujar",
+      "draft": "Borrador, sin publicar",
+      "changes": "Publicada, con cambios sin publicar",
+      "published": "Publicada: {{date}}"
+    }
+  },
+  "checks": {
+    "title": "Comprobaciones",
+    "ok": "Sin solapamientos.",
+    "overlap": "Se solapa con {{name}} ({{area}} m²)",
+    "outside": "Parte del área queda fuera de la diócesis.",
+    "confirmTitle": "Esta área se solapa con otras parroquias:",
+    "confirm": "Publicar de todos modos",
+    "cancel": "Cancelar"
+  },
+  "meta": {
+    "title": "Fuente y notas (privadas)",
+    "confidence": "Certeza de los límites (visible al público)",
+    "APPROXIMATE": "Aproximados",
+    "CONFIRMED": "Confirmados",
+    "notes": "Notas",
+    "sourceNotes": "De dónde proviene esta información",
+    "save": "Guardar notas",
+    "saved": "Notas guardadas."
+  },
+  "files": {
+    "title": "Archivos",
+    "import": "Importar GeoJSON",
+    "export": "Exportar GeoJSON",
+    "imported": "Archivo importado como borrador.",
+    "invalidFile": "El archivo no es GeoJSON válido."
+  },
+  "history": {
+    "title": "Historial",
+    "empty": "Aún no hay versiones.",
+    "restore": "Restaurar",
+    "restored": "Versión restaurada como borrador. El sitio público no cambia hasta publicar.",
+    "SAVE": "Guardado",
+    "PUBLISH": "Publicado",
+    "RESTORE": "Restaurado",
+    "IMPORT": "Importado"
+  },
+  "errors": {
+    "generic": "Algo salió mal. Inténtalo de nuevo.",
+    "session": "Tu sesión terminó. Vuelve a iniciar sesión.",
+    "invalid-geometry": "El área no es válida.",
+    "nothing-left-after-trim": "Las vecinas cubren toda esta área, así que no quedaría nada al recortar.",
+    "no-draft": "No hay borrador para publicar.",
+    "no-territory": "Esta iglesia está marcada como sin territorio.",
+    "not-published": "Esta área no está publicada.",
+    "too-many-vertices": "El área tiene demasiados puntos.",
+    "invalid-request": "Revisa los datos ingresados."
+  },
+  "issues": {
+    "empty": "El área está vacía o no es un polígono.",
+    "coordinates-out-of-range": "Hay coordenadas fuera de rango.",
+    "too-few-points": "Un área necesita al menos 3 puntos.",
+    "self-intersection": "El borde del área se cruza consigo mismo.",
+    "hole-outside-shell": "Hay un hueco fuera del área.",
+    "overlapping-parts": "Las partes de esta área se solapan entre sí."
+  }
+}

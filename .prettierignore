@@ -1,0 +1,7 @@
+node_modules
+dist
+coverage
+server/src/generated
+server/prisma/migrations
+server/test/fixtures
+package-lock.json

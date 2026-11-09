@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Diocese {
+  id         Int         @id @default(autoincrement())
+  slug       String      @unique
+  name       String
+  sourceUrl  String?
+  vicariates Vicariate[]
+  parishes   Parish[]
+  territory  Territory?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Vicariate {
+  id        Int      @id @default(autoincrement())
+  dioceseId Int
+  diocese   Diocese  @relation(fields: [dioceseId], references: [id], onDelete: Restrict)
+  name      String
+  sortOrder Int      @default(0)
+  parishes  Parish[]
+
+  @@unique([dioceseId, name])
+}
+
+model Parish {
+  id           Int        @id @default(autoincrement())
+  dioceseId    Int
+  diocese      Diocese    @relation(fields: [dioceseId], references: [id], onDelete: Restrict)
+  vicariateId  Int
+  vicariate    Vicariate  @relation(fields: [vicariateId], references: [id], onDelete: Restrict)
+  slug         String
+  name         String
+  /// Exact text from the source. Re-imports match on this, so corrections to `name` survive.
+  sourceName   String?
+  /// False for churches with no territory of their own, such as rectoral churches.
+  hasTerritory Boolean    @default(true)
+  address      String?
+  phone        String?
+  email        String?
+  website      String?
+  priest       String?
+  isPublished  Boolean    @default(true)
+  territory    Territory?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([dioceseId, slug])
+  @@unique([vicariateId, sourceName])
+  @@index([dioceseId])
+}
+
+/// The area of one diocese or one parish. Exactly one of dioceseId and parishId is set.
+model Territory {
+  id               Int                @id @default(autoincrement())
+  dioceseId        Int?               @unique
+  diocese          Diocese?           @relation(fields: [dioceseId], references: [id], onDelete: Restrict)
+  parishId         Int?               @unique
+  parish           Parish?            @relation(fields: [parishId], references: [id], onDelete: Restrict)
+  /// MultiPolygon GeoJSON geometry, WGS84, stored as text.
+  draftGeojson     String?
+  publishedGeojson String?
+  /// Bounding box of the published shape, as a JSON array: [west, south, east, north].
+  publishedBbox    String?
+  publishedAt      DateTime?
+  /// APPROXIMATE or CONFIRMED. SQLite has no enum type; see src/domain.ts.
+  confidence       String             @default("APPROXIMATE")
+  /// Private. Must never appear in public API responses.
+  notes            String?
+  /// Private. Must never appear in public API responses.
+  sourceNotes      String?
+  versions         TerritoryVersion[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+}
+
+model TerritoryVersion {
+  id          Int       @id @default(autoincrement())
+  territoryId Int
+  territory   Territory @relation(fields: [territoryId], references: [id], onDelete: Cascade)
+  geojson     String
+  /// SAVE, PUBLISH, RESTORE, or IMPORT. See src/domain.ts.
+  action      String
+  createdAt   DateTime  @default(now())
+
+  @@index([territoryId, createdAt])
+}

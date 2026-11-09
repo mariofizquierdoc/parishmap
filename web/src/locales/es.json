@@ -1,0 +1,54 @@
+{
+  "app": {
+    "name": "ParishMap",
+    "tagline": "Mapa de parroquias"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "retry": "Reintentar",
+    "loadError": "No se pudo cargar la información.",
+    "notFound": "Página no encontrada.",
+    "goHome": "Ir al inicio"
+  },
+  "home": {
+    "title": "Elige una diócesis",
+    "empty": "Aún no hay diócesis disponibles."
+  },
+  "diocese": {
+    "select": "Diócesis"
+  },
+  "list": {
+    "searchLabel": "Buscar parroquia",
+    "searchPlaceholder": "Buscar parroquia…",
+    "noResults": "Ninguna parroquia coincide con la búsqueda.",
+    "count_one": "{{count}} parroquia",
+    "count_other": "{{count}} parroquias",
+    "vicariate": "Vicaría {{name}}",
+    "mapped": "Área disponible en el mapa"
+  },
+  "parish": {
+    "close": "Cerrar detalles",
+    "vicariate": "Vicaría",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "email": "Correo",
+    "website": "Sitio web",
+    "priest": "Párroco",
+    "notFound": "No se encontró esta parroquia.",
+    "noTerritory": "Esta iglesia no tiene un territorio parroquial propio.",
+    "areaUnavailable": "Área aún no disponible",
+    "confidence": {
+      "APPROXIMATE": "Límites aproximados",
+      "CONFIRMED": "Límites confirmados"
+    },
+    "updated": "Actualizado: {{date}}"
+  },
+  "map": {
+    "label": "Mapa de parroquias",
+    "loadError": "No se pudo cargar el mapa. La lista de parroquias sigue disponible."
+  },
+  "footer": {
+    "disclaimer": "Los límites son referenciales y no constituyen un documento oficial.",
+    "source": "Fuente de la lista de parroquias"
+  }
+}
