@@ -118,3 +118,11 @@ allow tracing boundaries from its imagery and publishing the result.
 
 Boundaries are drawn by hand and may not match official records. Publicly, they're labeled as
 approximate unless marked as confirmed, and the site carries a disclaimer.
+
+## License
+
+The code is released under the [MIT License](LICENSE).
+
+The MIT License does not cover the parish list, which comes from the
+[Archdiocese of Guayaquil](https://arquidiocesisdeguayaquil.org.ec/parroquias/). That includes the
+trimmed copy of their page in `server/test/fixtures/`, which is kept only to test the importer.
