@@ -2,6 +2,7 @@ import type { PublicTerritoryCollection } from '@parishmap/shared';
 import type { MultiPolygon } from 'geojson';
 import {
   Map as MapLibreMap,
+  Marker,
   NavigationControl,
   type ExpressionSpecification,
   type GeoJSONSource,
@@ -16,15 +17,25 @@ import { DEFAULT_CENTER, DEFAULT_ZOOM, STREET_STYLE_URL } from '../lib/map-style
 const COLOR_PARISH = '#2b6a8f';
 const COLOR_SELECTED = '#d9480f';
 const COLOR_OUTLINE = '#37474f';
+const COLOR_LOCATION = '#1d2a33';
+/** Street level, so the visitor can recognize the place they searched for. */
+const LOCATION_ZOOM = 15;
+
+export interface MapLocation {
+  lng: number;
+  lat: number;
+}
 
 interface Props {
   outline: MultiPolygon | null;
   territories: PublicTerritoryCollection;
   selectedSlug: string | null;
   onSelect: (slug: string) => void;
+  /** A place found with "Encuentra mi parroquia". The map centers on it and shows a pin. */
+  location?: MapLocation | null;
 }
 
-export function ParishMap({ outline, territories, selectedSlug, onSelect }: Props) {
+export function ParishMap({ outline, territories, selectedSlug, onSelect, location }: Props) {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -147,13 +158,34 @@ export function ParishMap({ outline, territories, selectedSlug, onSelect }: Prop
     [outline, territories],
   );
 
+  const hasLocation = Boolean(location);
+
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !isLoaded) return;
+    // A searched location takes priority: the map stays centered on it.
+    if (!map || !isLoaded || hasLocation) return;
     const selected = territories.features.find((f) => f.properties.slug === selectedSlug);
     const bounds = selected ? boundsOf([selected.geometry]) : overviewBounds;
     if (bounds) map.fitBounds(bounds, { padding: 48, maxZoom: 16 });
-  }, [isLoaded, selectedSlug, territories, overviewBounds]);
+  }, [isLoaded, selectedSlug, territories, overviewBounds, hasLocation]);
+
+  const markerLabel = t('find.marker');
+
+  // Runs for every new search, even of the same place, so the map always comes back to it.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !isLoaded || !location) return;
+    const { lng, lat } = location;
+    const marker = new Marker({ color: COLOR_LOCATION }).setLngLat([lng, lat]).addTo(map);
+    const element = marker.getElement();
+    element.classList.add('location-marker');
+    element.setAttribute('role', 'img');
+    element.setAttribute('aria-label', markerLabel);
+    map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), LOCATION_ZOOM) });
+    return () => {
+      marker.remove();
+    };
+  }, [isLoaded, location, markerLabel]);
 
   return (
     <div className="map-wrapper">

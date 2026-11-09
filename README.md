@@ -111,6 +111,13 @@ Street maps come from [OpenFreeMap](https://openfreemap.org/), which needs no ke
 limit, but offers no uptime guarantee. If it's unavailable, the parish list keeps working and the
 map shows a message.
 
+**Encuentra mi parroquia** uses the visitor's location or an address to find their parish. The
+address search uses [Photon](https://photon.komoot.io/), a free geocoder built on OpenStreetMap
+data. It needs no key, but has no uptime guarantee and is meant for light use. Only the typed
+address is sent to Photon. The parish lookup runs in the browser, so the visitor's location is
+never sent to this server. Google's address search isn't used because its terms forbid showing
+results on a non-Google map.
+
 **Satellite imagery is off until configured.** Before enabling a provider, check that its terms
 allow tracing boundaries from its imagery and publishing the result.
 

@@ -11,6 +11,8 @@ import { publicRouter } from './routes/public';
 import { TerritoryError } from './territories';
 
 const MAP_TILE_ORIGIN = 'https://tiles.openfreemap.org';
+/** Address search for "Encuentra mi parroquia". Must match PHOTON_URL in web/src/lib/geocode.ts. */
+const GEOCODER_ORIGIN = 'https://photon.komoot.io';
 
 export interface AppOptions {
   auth?: AuthConfig | null;
@@ -48,7 +50,7 @@ export function createApp(prisma: PrismaClient, options: AppOptions = {}) {
           styleSrc: ["'self'", "'unsafe-inline'"],
           imgSrc: ["'self'", 'data:', 'blob:', MAP_TILE_ORIGIN, ...imagery],
           fontSrc: ["'self'"],
-          connectSrc: ["'self'", MAP_TILE_ORIGIN, ...imagery],
+          connectSrc: ["'self'", MAP_TILE_ORIGIN, GEOCODER_ORIGIN, ...imagery],
           // MapLibre runs its map processing in web workers.
           workerSrc: ["'self'", 'blob:'],
           upgradeInsecureRequests: options.https ? [] : null,

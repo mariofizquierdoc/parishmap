@@ -73,6 +73,7 @@ describe('serving the built website', () => {
     expect(csp).toContain("script-src 'self'");
     expect(csp).not.toMatch(/script-src[^;]*unsafe/);
     expect(csp).toContain('https://tiles.openfreemap.org');
+    expect(csp).toMatch(/connect-src[^;]*https:\/\/photon\.komoot\.io/);
     expect(csp).toContain('https://img.example:8443');
     expect(csp).toContain("worker-src 'self' blob:");
     expect(csp).toContain('upgrade-insecure-requests');
