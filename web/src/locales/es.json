@@ -43,6 +43,25 @@
     },
     "updated": "Actualizado: {{date}}"
   },
+  "find": {
+    "button": "Encuentra mi parroquia",
+    "close": "Cerrar búsqueda",
+    "useLocation": "Usar mi ubicación",
+    "locating": "Buscando tu ubicación…",
+    "addressLabel": "O escribe tu dirección",
+    "addressPlaceholder": "Ej.: Av. 9 de Octubre y Boyacá",
+    "searching": "Buscando…",
+    "noResults": "No se encontró esa dirección. Prueba con una calle principal o un lugar conocido.",
+    "searchError": "La búsqueda de direcciones no está disponible ahora.",
+    "permissionDenied": "No diste permiso para usar tu ubicación. Puedes escribir tu dirección.",
+    "locationError": "No se pudo obtener tu ubicación. Intenta de nuevo o escribe tu dirección.",
+    "result": "Tu parroquia es {{name}}",
+    "notMapped": "Aún no tenemos el área de la parroquia de este lugar.",
+    "outside": "Esta ubicación está fuera de {{diocese}}.",
+    "again": "Buscar otra dirección",
+    "attribution": "Búsqueda: Photon · © OpenStreetMap",
+    "marker": "Ubicación buscada"
+  },
   "map": {
     "label": "Mapa de parroquias",
     "loadError": "No se pudo cargar el mapa. La lista de parroquias sigue disponible."

@@ -4,9 +4,10 @@ import type {
   PublicParishList,
   PublicTerritoryCollection,
 } from '@parishmap/shared';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router';
+import { FindMyParish, type FoundLocation } from '../components/FindMyParish';
 import { ParishDetails } from '../components/ParishDetails';
 import { ParishList } from '../components/ParishList';
 import { ParishMap } from '../components/ParishMap';
@@ -72,12 +73,41 @@ function DioceseView({ data, parishSlug }: { data: PageData; parishSlug: string 
       : `${diocese.name} · ${t('app.name')}`;
   }, [selectedName, diocese.name, t]);
 
-  const select = useCallback(
+  // A place found with "Encuentra mi parroquia". Kept only in memory, never in the URL.
+  const [found, setFound] = useState<FoundLocation | null>(null);
+
+  const goTo = useCallback(
     (slug: string | null) => {
       void navigate(slug ? `/${diocese.slug}/${slug}` : `/${diocese.slug}`);
     },
     [navigate, diocese.slug],
   );
+
+  /** A choice made by hand replaces any searched location. */
+  const select = useCallback(
+    (slug: string | null) => {
+      setFound(null);
+      goTo(slug);
+    },
+    [goTo],
+  );
+
+  const showFound = useCallback(
+    (result: FoundLocation) => {
+      setFound(result);
+      goTo(result.parish?.slug ?? null);
+    },
+    [goTo],
+  );
+
+  // Going back or forward in the browser selects a different parish, so the result no longer
+  // applies. This runs only when the URL changes: right after a search, the URL may still show
+  // the previous parish for one render.
+  useEffect(() => {
+    setFound((current) =>
+      current && (current.parish?.slug ?? null) !== (parishSlug ?? null) ? null : current,
+    );
+  }, [parishSlug]);
 
   return (
     <div className="layout">
@@ -98,6 +128,15 @@ function DioceseView({ data, parishSlug }: { data: PageData; parishSlug: string 
             </select>
           </label>
         </header>
+
+        <FindMyParish
+          dioceseName={diocese.name}
+          outline={diocese.outline}
+          territories={territories}
+          found={found}
+          onFound={showFound}
+          onClear={() => setFound(null)}
+        />
 
         {selected && <ParishDetails parish={selected} onClose={() => select(null)} />}
         {parishSlug && !selected && (
@@ -132,6 +171,7 @@ function DioceseView({ data, parishSlug }: { data: PageData; parishSlug: string 
           territories={territories}
           selectedSlug={selected?.hasPublishedTerritory ? selected.slug : null}
           onSelect={select}
+          location={found}
         />
       </div>
     </div>
