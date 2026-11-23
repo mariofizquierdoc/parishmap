@@ -91,6 +91,12 @@ export function ParishesPage() {
       <div className="admin-title-row">
         <h1>{diocese.name}</h1>
         <div className="button-row">
+          <Link className="button button-primary" to={`/admin/${diocese.slug}/parishes/new`}>
+            {t('admin.list.newParish')}
+          </Link>
+          <Link className="button" to={`/admin/${diocese.slug}/settings`}>
+            {t('admin.list.settings')}
+          </Link>
           <Link className="button" to={`/admin/${diocese.slug}/outline`}>
             {t('admin.list.outline')}
           </Link>
@@ -103,6 +109,19 @@ export function ParishesPage() {
           </a>
         </div>
       </div>
+
+      {!diocese.isPublished && (
+        <p className="message message-warning">
+          {t('admin.list.hiddenDiocese')}{' '}
+          <Link to={`/admin/${diocese.slug}/settings`}>{t('admin.list.settings')}</Link>
+        </p>
+      )}
+      {diocese.vicariates.length === 0 && (
+        <p className="message message-warning">
+          {t('admin.newParish.noVicariates')}{' '}
+          <Link to={`/admin/${diocese.slug}/settings`}>{t('admin.list.settings')}</Link>
+        </p>
+      )}
 
       <p data-testid="progress">
         {t('admin.progress.summary', {

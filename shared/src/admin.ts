@@ -6,6 +6,19 @@ export type TerritoryOwnerKind = 'parish' | 'diocese';
 export interface AdminVicariate {
   id: number;
   name: string;
+  /** A vicariate can only be deleted once no parish belongs to it. */
+  parishCount: number;
+}
+
+export interface AdminDioceseSummary {
+  id: number;
+  slug: string;
+  name: string;
+  sourceUrl: string | null;
+  isPublished: boolean;
+  parishCount: number;
+  vicariateCount: number;
+  outlineDrawn: boolean;
 }
 
 export interface AdminParish {
@@ -33,6 +46,8 @@ export interface AdminDiocese {
   id: number;
   slug: string;
   name: string;
+  sourceUrl: string | null;
+  isPublished: boolean;
   vicariates: AdminVicariate[];
   parishes: AdminParish[];
 }

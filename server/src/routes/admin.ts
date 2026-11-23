@@ -18,6 +18,18 @@ import {
   sessionCookieOptions,
   type AuthConfig,
 } from '../auth';
+import {
+  createDiocese,
+  createParish,
+  createVicariate,
+  deleteDiocese,
+  deleteParish,
+  deleteVicariate,
+  listDioceses,
+  renameVicariate,
+  reorderVicariates,
+  updateDiocese,
+} from '../catalog';
 import { CONFIDENCE_LEVELS } from '../domain';
 import type { PrismaClient } from '../generated/prisma/client';
 import {
@@ -50,23 +62,64 @@ const optionalText = z
   .transform((value) => value || null)
   .nullable();
 
-const parishUpdate = z
+const nameField = z.string().trim().min(1).max(200);
+
+const optionalUrl = optionalText.refine(
+  (value) => value === null || /^https?:\/\/\S+$/i.test(value),
+  'Must start with http:// or https://',
+);
+
+const parishFields = {
+  name: nameField,
+  vicariateId: z.number().int().positive(),
+  hasTerritory: z.boolean(),
+  isPublished: z.boolean(),
+  address: optionalText,
+  phone: optionalText,
+  email: optionalText,
+  website: optionalUrl,
+  priest: optionalText,
+};
+
+const parishUpdate = z.object(parishFields).partial().strict();
+
+/** The slug is checked in catalog.ts, so the error can say exactly what's wrong with it. */
+const slugField = z.string().trim().max(200);
+
+const parishCreate = z
   .object({
-    name: z.string().trim().min(1).max(200),
-    vicariateId: z.number().int().positive(),
-    hasTerritory: z.boolean(),
-    isPublished: z.boolean(),
-    address: optionalText,
-    phone: optionalText,
-    email: optionalText,
-    website: optionalText.refine(
-      (value) => value === null || /^https?:\/\/\S+$/i.test(value),
-      'Website must start with http:// or https://',
-    ),
-    priest: optionalText,
+    ...parishFields,
+    hasTerritory: parishFields.hasTerritory.optional(),
+    isPublished: parishFields.isPublished.optional(),
+    address: optionalText.optional(),
+    phone: optionalText.optional(),
+    email: optionalText.optional(),
+    website: optionalUrl.optional(),
+    priest: optionalText.optional(),
+    slug: slugField.optional(),
   })
-  .partial()
   .strict();
+
+const dioceseFields = { name: nameField, sourceUrl: optionalUrl, isPublished: z.boolean() };
+
+const dioceseCreate = z
+  .object({
+    ...dioceseFields,
+    slug: slugField,
+    sourceUrl: optionalUrl.optional(),
+    isPublished: dioceseFields.isPublished.optional(),
+  })
+  .strict();
+
+/** No slug here: it's part of every public link, so it's fixed once the diocese exists. */
+const dioceseUpdate = z.object(dioceseFields).partial().strict();
+
+const vicariateBody = z.object({ name: nameField }).strict();
+const vicariateOrder = z.object({ ids: z.array(z.number().int().positive()).max(500) }).strict();
+
+/** Deletes take a JSON body like every other change. It carries the typed confirmation. */
+const confirmBody = z.object({ confirmName: z.string().max(200) }).strict();
+const emptyBody = z.object({}).strict();
 
 const metaUpdate = z
   .object({
@@ -157,11 +210,64 @@ export function adminRouter(
     res.json(body);
   });
 
+  router.get('/dioceses', async (_req, res) => {
+    res.json(await listDioceses(prisma));
+  });
+
+  router.post('/dioceses', async (req, res) => {
+    const diocese = await createDiocese(prisma, dioceseCreate.parse(req.body));
+    res.status(201).json({ id: diocese.id, slug: diocese.slug });
+  });
+
+  router.patch('/dioceses/:id', async (req, res) => {
+    await updateDiocese(prisma, intParam(req, 'id'), dioceseUpdate.parse(req.body));
+    res.json({ updated: true });
+  });
+
+  router.delete('/dioceses/:id', async (req, res) => {
+    const { confirmName } = confirmBody.parse(req.body);
+    await deleteDiocese(prisma, intParam(req, 'id'), confirmName);
+    res.json({ deleted: true });
+  });
+
+  router.post('/dioceses/:id/vicariates', async (req, res) => {
+    const vicariate = await createVicariate(
+      prisma,
+      intParam(req, 'id'),
+      vicariateBody.parse(req.body).name,
+    );
+    res.status(201).json({ id: vicariate.id });
+  });
+
+  router.put('/dioceses/:id/vicariates/order', async (req, res) => {
+    await reorderVicariates(prisma, intParam(req, 'id'), vicariateOrder.parse(req.body).ids);
+    res.json({ updated: true });
+  });
+
+  router.patch('/vicariates/:id', async (req, res) => {
+    await renameVicariate(prisma, intParam(req, 'id'), vicariateBody.parse(req.body).name);
+    res.json({ updated: true });
+  });
+
+  router.delete('/vicariates/:id', async (req, res) => {
+    emptyBody.parse(req.body);
+    await deleteVicariate(prisma, intParam(req, 'id'));
+    res.json({ deleted: true });
+  });
+
+  router.post('/dioceses/:id/parishes', async (req, res) => {
+    const parish = await createParish(prisma, intParam(req, 'id'), parishCreate.parse(req.body));
+    res.status(201).json({ id: parish.id, slug: parish.slug });
+  });
+
   router.get('/dioceses/:slug', async (req, res) => {
     const diocese = await prisma.diocese.findUnique({
       where: { slug: req.params.slug },
       include: {
-        vicariates: { orderBy: { sortOrder: 'asc' } },
+        vicariates: {
+          orderBy: { sortOrder: 'asc' },
+          include: { _count: { select: { parishes: true } } },
+        },
         parishes: {
           include: { territory: true, vicariate: true },
           orderBy: [{ vicariate: { sortOrder: 'asc' } }, { name: 'asc' }],
@@ -174,7 +280,13 @@ export function adminRouter(
       id: diocese.id,
       slug: diocese.slug,
       name: diocese.name,
-      vicariates: diocese.vicariates.map(({ id, name }) => ({ id, name })),
+      sourceUrl: diocese.sourceUrl,
+      isPublished: diocese.isPublished,
+      vicariates: diocese.vicariates.map((vicariate) => ({
+        id: vicariate.id,
+        name: vicariate.name,
+        parishCount: vicariate._count.parishes,
+      })),
       parishes: diocese.parishes.map((parish): AdminParish => {
         const territory = parish.territory;
         return {
@@ -238,6 +350,12 @@ export function adminRouter(
     // The slug is left alone, so existing shared links keep working after a name correction.
     await prisma.parish.update({ where: { id }, data });
     res.json({ updated: true });
+  });
+
+  router.delete('/parishes/:id', async (req, res) => {
+    const { confirmName } = confirmBody.parse(req.body);
+    await deleteParish(prisma, intParam(req, 'id'), confirmName);
+    res.json({ deleted: true });
   });
 
   const territoryPath = '/territories/:kind/:id';

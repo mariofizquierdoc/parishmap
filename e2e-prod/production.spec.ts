@@ -85,6 +85,7 @@ test('the admin site works under the security policy, and its login cookie is pr
   await page.getByLabel('Usuario').fill(E2E_ADMIN_USERNAME);
   await page.getByLabel('Contraseña').fill(E2E_ADMIN_PASSWORD);
   await page.getByRole('button', { name: 'Entrar' }).click();
+  await page.getByRole('link', { name: 'Arquidiócesis de Guayaquil' }).click();
   await expect(page.getByTestId('progress')).toBeVisible();
 
   const cookie = (await context.cookies()).find((item) => item.name === 'parishmap_session');
