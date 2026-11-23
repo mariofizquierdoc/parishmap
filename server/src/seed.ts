@@ -23,6 +23,7 @@ export async function seedGuayaquil(prisma: PrismaClient) {
       slug: GUAYAQUIL_SLUG,
       name: 'Arquidiócesis de Guayaquil',
       sourceUrl: GUAYAQUIL_SOURCE_URL,
+      isPublished: true,
     },
   });
 

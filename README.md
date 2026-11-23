@@ -52,6 +52,20 @@ The first run of the browser tests needs `npx playwright install chromium`.
 The importer only adds parishes that are new. It never changes or deletes existing ones, so
 corrections made in the admin site are safe. It prints anything that looks wrong for review.
 
+## Managing dioceses
+
+Dioceses, vicariates and parishes can be added in the admin site, starting from `/admin`.
+
+- A new diocese starts **hidden**. The public site and API act as if it didn't exist until you tick
+  "Mostrar en el sitio público" in its settings.
+- A diocese's or parish's web address (slug) is chosen when it's created and can't change
+  afterward, so shared links keep working.
+- A diocese can only be deleted once it has no parishes. Deleting it also deletes its vicariates
+  and its outline.
+- **Deleting a parish also deletes its boundary and the boundary's whole history.** Back up first,
+  or untick "Mostrar en el sitio público" to hide it instead.
+- The Guayaquil importer matches vicariates by name, so renaming one breaks the next import.
+
 ## Backups
 
 **The hand-drawn boundaries exist only in the database, which isn't in git.** Back up regularly:

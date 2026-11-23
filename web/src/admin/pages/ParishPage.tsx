@@ -1,11 +1,13 @@
 import type { AdminConfig, AdminDiocese, AdminParish } from '@parishmap/shared/admin';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { StatusMessage } from '../../components/StatusMessage';
 import { useLoad } from '../../lib/api';
 import { adminRequest, AdminApiError } from '../api';
 import { BoundaryEditor } from '../components/BoundaryEditor';
+import { ConfirmDeleteDialog } from '../components/ConfirmDeleteDialog';
+import { PARISH_TEXT_FIELDS } from '../parish-fields';
 
 export function ParishPage() {
   const { t } = useTranslation();
@@ -35,8 +37,6 @@ export function ParishPage() {
   return <ParishView key={parish.id} diocese={diocese} parish={parish} config={config} />;
 }
 
-const TEXT_FIELDS = ['address', 'phone', 'email', 'website', 'priest'] as const;
-
 function ParishView({
   diocese,
   parish,
@@ -62,6 +62,9 @@ function ParishView({
   const [savedName, setSavedName] = useState(parish.name);
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const navigate = useNavigate();
+  const hasBoundary = parish.hasDraft || parish.hasPublished;
 
   const save = async (event: FormEvent) => {
     event.preventDefault();
@@ -125,7 +128,7 @@ function ParishView({
               ))}
             </select>
           </label>
-          {TEXT_FIELDS.map((field) => (
+          {PARISH_TEXT_FIELDS.map((field) => (
             <label className="admin-field" key={field}>
               <span>{t(`admin.parish.${field}`)}</span>
               <input
@@ -166,6 +169,38 @@ function ParishView({
           </button>
         </form>
       </section>
+
+      <section className="admin-card danger-card">
+        <h2>{t('admin.danger.title')}</h2>
+        <p>{t('admin.parish.deleteHelp')}</p>
+        <button
+          type="button"
+          className="button button-danger"
+          onClick={() => setConfirmingDelete(true)}
+        >
+          {t('admin.parish.delete')}
+        </button>
+      </section>
+
+      {confirmingDelete && (
+        <ConfirmDeleteDialog
+          title={t('admin.parish.deleteTitle', { name: savedName })}
+          name={savedName}
+          onClose={() => setConfirmingDelete(false)}
+          onConfirm={async () => {
+            await adminRequest(`/parishes/${parish.id}`, {
+              method: 'DELETE',
+              body: { confirmName: savedName },
+            });
+            await navigate(`/admin/${diocese.slug}`);
+          }}
+        >
+          {hasBoundary && (
+            <p className="message message-warning">{t('admin.parish.deleteBoundaryWarning')}</p>
+          )}
+          <p>{t('admin.parish.deleteHideInstead')}</p>
+        </ConfirmDeleteDialog>
+      )}
     </main>
   );
 }

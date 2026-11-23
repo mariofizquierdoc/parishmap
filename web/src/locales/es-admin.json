@@ -17,7 +17,11 @@
     "outline": "Contorno de la diócesis",
     "exportAll": "Exportar todo (GeoJSON)",
     "noResults": "Ninguna parroquia coincide.",
-    "columns": { "name": "Parroquia", "vicariate": "Vicaría", "status": "Estado" },
+    "columns": {
+      "name": "Parroquia",
+      "vicariate": "Vicaría",
+      "status": "Estado"
+    },
     "filters": {
       "all": "Todas",
       "missing": "Sin área",
@@ -25,7 +29,10 @@
       "approximate": "Aproximadas",
       "confirmed": "Confirmadas",
       "noTerritory": "Sin territorio"
-    }
+    },
+    "newParish": "Nueva parroquia",
+    "settings": "Configuración de la diócesis",
+    "hiddenDiocese": "Esta diócesis está oculta: no aparece en el sitio público."
   },
   "status": {
     "missing": "Sin área",
@@ -58,7 +65,81 @@
     "isPublished": "Mostrar en el sitio público",
     "save": "Guardar datos",
     "saved": "Datos guardados.",
-    "noTerritory": "Esta iglesia está marcada como sin territorio, así que no tiene área en el mapa."
+    "noTerritory": "Esta iglesia está marcada como sin territorio, así que no tiene área en el mapa.",
+    "delete": "Eliminar parroquia",
+    "deleteHelp": "Elimina la parroquia, su área y todo su historial. No se puede deshacer.",
+    "deleteTitle": "¿Eliminar {{name}}?",
+    "deleteBoundaryWarning": "Esta parroquia tiene un área dibujada. El área y todo su historial se perderán. Haz una copia de seguridad antes (npm run backup).",
+    "deleteHideInstead": "Si solo quieres quitarla del sitio público, desmarca «Mostrar en el sitio público» en lugar de eliminarla."
+  },
+  "dioceses": {
+    "title": "Diócesis",
+    "empty": "Aún no hay diócesis.",
+    "columns": {
+      "name": "Diócesis",
+      "parishes": "Parroquias",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "published": "Pública",
+    "settings": "Configuración",
+    "new": "Nueva diócesis",
+    "name": "Nombre",
+    "slug": "Dirección web",
+    "slugHelp": "Quedará en {{url}}. Solo minúsculas, números y guiones. No se puede cambiar después.",
+    "sourceUrl": "Página de origen (opcional)",
+    "isPublished": "Mostrar en el sitio público",
+    "isPublishedHelp": "Déjalo desmarcado mientras preparas la diócesis.",
+    "create": "Crear diócesis"
+  },
+  "dioceseSettings": {
+    "back": "Volver a las parroquias",
+    "title": "Configuración de {{name}}",
+    "details": "Datos de la diócesis",
+    "slugLocked": "no se puede cambiar, para que los enlaces compartidos sigan funcionando",
+    "save": "Guardar datos",
+    "saved": "Datos guardados.",
+    "delete": "Eliminar diócesis",
+    "deleteHelp": "Elimina la diócesis, sus vicarías y su contorno. No se puede deshacer.",
+    "deleteBlocked_one": "No se puede eliminar mientras tenga parroquias. Ahora tiene {{count}}.",
+    "deleteBlocked_other": "No se puede eliminar mientras tenga parroquias. Ahora tiene {{count}}.",
+    "deleteTitle": "¿Eliminar {{name}}?",
+    "deleteWarning": "Se eliminarán también sus vicarías y su contorno, con su historial."
+  },
+  "vicariates": {
+    "title": "Vicarías",
+    "empty": "Aún no hay vicarías. Crea al menos una antes de añadir parroquias.",
+    "importWarning": "El importador reconoce las vicarías por su nombre. Si cambias un nombre, la próxima importación fallará.",
+    "name": "Nombre de la vicaría",
+    "newName": "Nueva vicaría",
+    "add": "Añadir vicaría",
+    "added": "Vicaría añadida.",
+    "rename": "Renombrar",
+    "renamed": "Vicaría renombrada.",
+    "reordered": "Orden guardado.",
+    "moveUp": "Subir {{name}}",
+    "moveDown": "Bajar {{name}}",
+    "deleteShort": "Eliminar",
+    "delete": "Eliminar {{name}}",
+    "deleted": "Vicaría eliminada.",
+    "inUse": "Tiene parroquias. Muévelas a otra vicaría antes de eliminarla.",
+    "parishCount_one": "{{count}} parroquia",
+    "parishCount_other": "{{count}} parroquias"
+  },
+  "newParish": {
+    "title": "Nueva parroquia",
+    "slug": "Dirección web (opcional)",
+    "slugHelp": "Si la dejas vacía, se crea a partir del nombre. No se puede cambiar después.",
+    "noVicariates": "Esta diócesis no tiene vicarías. Crea una antes de añadir parroquias.",
+    "create": "Crear parroquia"
+  },
+  "danger": {
+    "title": "Zona de peligro"
+  },
+  "confirmDelete": {
+    "typeName": "Escribe «{{name}}» para confirmar",
+    "confirm": "Eliminar definitivamente",
+    "cancel": "Cancelar"
   },
   "editor": {
     "outlineTitle": "Contorno de {{name}}",
@@ -142,7 +223,18 @@
     "no-territory": "Esta iglesia está marcada como sin territorio.",
     "not-published": "Esta área no está publicada.",
     "too-many-vertices": "El área tiene demasiados puntos.",
-    "invalid-request": "Revisa los datos ingresados."
+    "invalid-request": "Revisa los datos ingresados.",
+    "not-found": "No se encontró. Puede que alguien lo haya eliminado.",
+    "invalid-vicariate": "Elige una vicaría de esta diócesis.",
+    "invalid-slug": "La dirección web solo puede tener minúsculas, números y guiones (máximo 60).",
+    "slug-reserved": "Esa dirección web está reservada por el sitio. Elige otra.",
+    "slug-taken": "Esa dirección web ya está en uso. Elige otra.",
+    "vicariate-exists": "Ya existe una vicaría con ese nombre.",
+    "vicariate-not-empty": "Esta vicaría tiene parroquias. Muévelas antes de eliminarla.",
+    "diocese-not-empty": "La diócesis tiene parroquias. Elimínalas antes.",
+    "invalid-order": "La lista de vicarías cambió. Recarga la página e inténtalo de nuevo.",
+    "confirm-mismatch": "El nombre escrito no coincide.",
+    "conflict": "Otro cambio se guardó al mismo tiempo. Recarga la página e inténtalo de nuevo."
   },
   "issues": {
     "empty": "El área está vacía o no es un polígono.",

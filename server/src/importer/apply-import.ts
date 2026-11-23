@@ -1,4 +1,4 @@
-import { slugify } from '../domain';
+import { pickParishSlug } from '../catalog';
 import type { PrismaClient } from '../generated/prisma/client';
 import type { ParsedParish } from './parse-guayaquil';
 
@@ -58,12 +58,7 @@ export async function applyImport(
       continue;
     }
 
-    let slug = slugify(parish.name);
-    if (usedSlugs.has(slug)) slug = `${slug}-${slugify(vicariate.name)}`;
-    if (usedSlugs.has(slug)) {
-      throw new Error(`Could not build a unique slug for "${parish.name}"`);
-    }
-    usedSlugs.add(slug);
+    const slug = pickParishSlug(parish.name, vicariate.name, usedSlugs);
 
     toCreate.push({
       dioceseId: diocese.id,

@@ -26,3 +26,8 @@ export async function adminRequest<T>(
   }
   return (await response.json()) as T;
 }
+
+/** The server's error code, for looking up `admin.errors.<code>`. */
+export function errorCode(error: unknown): string {
+  return error instanceof AdminApiError ? error.body.error : 'generic';
+}

@@ -108,7 +108,12 @@ export function createApp(prisma: PrismaClient, options: AppOptions = {}) {
     });
   }
 
-  const handleError: ErrorRequestHandler = (error: { status?: number }, _req, res, next) => {
+  const handleError: ErrorRequestHandler = (
+    error: { status?: number; code?: unknown },
+    _req,
+    res,
+    next,
+  ) => {
     if (res.headersSent) {
       next(error);
       return;
@@ -120,6 +125,11 @@ export function createApp(prisma: PrismaClient, options: AppOptions = {}) {
     }
     if (error instanceof ZodError) {
       res.status(400).json({ error: 'invalid-request' });
+      return;
+    }
+    // A unique constraint failed: another request created the same slug or name first.
+    if (error.code === 'P2002') {
+      res.status(409).json({ error: 'conflict' });
       return;
     }
     // Includes malformed or oversized JSON, and missing files under /assets.

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
-import { E2E_ADMIN_PASSWORD, E2E_ADMIN_USERNAME } from './admin-credentials';
+import { E2E_ADMIN_USERNAME } from './admin-credentials';
+import { loginAsAdmin } from './helpers';
 
 type MapDebug = {
   project(c: [number, number]): { x: number; y: number };
@@ -20,12 +21,10 @@ type Debug = { __adminMap?: MapDebug; __adminDraw?: DrawDebug };
 // These tests change shared data and drive a mouse, so they run once, on the desktop layout.
 test.skip(({ isMobile }) => isMobile, 'Admin flows run on the desktop layout');
 
+/** Logs in and opens Guayaquil's parish list, where most of these tests start. */
 async function login(page: Page) {
-  await page.goto('/admin');
-  await page.getByLabel('Usuario').fill(E2E_ADMIN_USERNAME);
-  await page.getByLabel('Contraseña').fill(E2E_ADMIN_PASSWORD);
-  await page.getByRole('button', { name: 'Entrar' }).click();
-  await expect(page.getByRole('button', { name: 'Cerrar sesión' })).toBeVisible();
+  await loginAsAdmin(page);
+  await page.getByRole('link', { name: 'Arquidiócesis de Guayaquil' }).click();
 }
 
 async function waitForEditor(page: Page) {

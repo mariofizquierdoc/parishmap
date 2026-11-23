@@ -1,4 +1,5 @@
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
+import { E2E_ADMIN_PASSWORD, E2E_ADMIN_USERNAME } from './admin-credentials';
 
 /** Tests don't depend on a real tile provider. They use a blank map style instead. */
 export async function useBlankMapStyle(page: Page) {
@@ -55,3 +56,11 @@ export async function clickMapAt(page: Page, lng: number, lat: number) {
 
 export const parishButton = (page: Page, name: string) =>
   page.getByRole('button', { name, exact: false }).filter({ hasText: name });
+
+export async function loginAsAdmin(page: Page) {
+  await page.goto('/admin');
+  await page.getByLabel('Usuario').fill(E2E_ADMIN_USERNAME);
+  await page.getByLabel('Contraseña').fill(E2E_ADMIN_PASSWORD);
+  await page.getByRole('button', { name: 'Entrar' }).click();
+  await expect(page.getByRole('button', { name: 'Cerrar sesión' })).toBeVisible();
+}

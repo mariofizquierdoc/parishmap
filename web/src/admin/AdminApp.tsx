@@ -1,11 +1,12 @@
-import type { PublicDioceseSummary } from '@parishmap/shared';
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Navigate, Route, Routes } from 'react-router';
+import { Link, Route, Routes } from 'react-router';
 import { StatusMessage } from '../components/StatusMessage';
-import { getJson, useLoad } from '../lib/api';
 import './admin.css';
 import { adminRequest, AdminApiError } from './api';
+import { DioceseSettingsPage } from './pages/DioceseSettingsPage';
+import { DiocesesPage } from './pages/DiocesesPage';
+import { NewParishPage } from './pages/NewParishPage';
 import { OutlinePage } from './pages/OutlinePage';
 import { ParishesPage } from './pages/ParishesPage';
 import { ParishPage } from './pages/ParishPage';
@@ -54,6 +55,7 @@ export default function AdminApp() {
           {t('app.name')} · {t('admin.title')}
         </Link>
         <nav>
+          <Link to="/admin">{t('admin.dioceses.title')}</Link>
           <Link to="/" target="_blank">
             {t('admin.viewPublic')}
           </Link>
@@ -63,27 +65,15 @@ export default function AdminApp() {
         </nav>
       </header>
       <Routes>
-        <Route index element={<FirstDiocese />} />
+        <Route index element={<DiocesesPage />} />
         <Route path=":dioceseSlug" element={<ParishesPage />} />
+        <Route path=":dioceseSlug/settings" element={<DioceseSettingsPage />} />
         <Route path=":dioceseSlug/outline" element={<OutlinePage />} />
+        <Route path=":dioceseSlug/parishes/new" element={<NewParishPage />} />
         <Route path=":dioceseSlug/parishes/:parishId" element={<ParishPage />} />
       </Routes>
     </div>
   );
-}
-
-function FirstDiocese() {
-  const { t } = useTranslation();
-  const { state, retry } = useLoad('dioceses', (signal) =>
-    getJson<PublicDioceseSummary[]>('/api/dioceses', signal),
-  );
-  if (state.status === 'loading') return <StatusMessage>{t('common.loading')}</StatusMessage>;
-  if (state.status === 'error') {
-    return <StatusMessage onRetry={retry}>{t('common.loadError')}</StatusMessage>;
-  }
-  const [first] = state.data;
-  if (!first) return <StatusMessage>{t('home.empty')}</StatusMessage>;
-  return <Navigate to={`/admin/${first.slug}`} replace />;
 }
 
 function LoginForm({ onLogin }: { onLogin: () => void }) {

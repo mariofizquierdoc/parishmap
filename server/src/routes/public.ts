@@ -23,6 +23,7 @@ function setPublicCache(res: Response) {
 /**
  * Every response is built field by field, and queries select only public columns.
  * Territory notes and drafts must never reach this router, even by accident.
+ * Hidden dioceses answer 404, exactly as if they didn't exist.
  */
 export function publicRouter(prisma: PrismaClient) {
   const router = Router();
@@ -33,6 +34,7 @@ export function publicRouter(prisma: PrismaClient) {
 
   router.get('/dioceses', async (_req, res) => {
     const dioceses = await prisma.diocese.findMany({
+      where: { isPublished: true },
       select: { slug: true, name: true },
       orderBy: { name: 'asc' },
     });
@@ -42,7 +44,7 @@ export function publicRouter(prisma: PrismaClient) {
 
   router.get('/dioceses/:slug', async (req, res) => {
     const diocese = await prisma.diocese.findUnique({
-      where: { slug: req.params.slug },
+      where: { slug: req.params.slug, isPublished: true },
       select: {
         slug: true,
         name: true,
@@ -66,7 +68,7 @@ export function publicRouter(prisma: PrismaClient) {
 
   router.get('/dioceses/:slug/parishes', async (req, res) => {
     const diocese = await prisma.diocese.findUnique({
-      where: { slug: req.params.slug },
+      where: { slug: req.params.slug, isPublished: true },
       select: {
         vicariates: {
           orderBy: { sortOrder: 'asc' },
@@ -128,7 +130,7 @@ export function publicRouter(prisma: PrismaClient) {
 
   router.get('/dioceses/:slug/territories', async (req, res) => {
     const diocese = await prisma.diocese.findUnique({
-      where: { slug: req.params.slug },
+      where: { slug: req.params.slug, isPublished: true },
       select: { id: true },
     });
     if (!diocese) {
